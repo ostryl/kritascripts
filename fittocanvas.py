@@ -3,6 +3,7 @@ from krita import *
 from pathlib import Path
 import xml.etree.ElementTree as ET
 import re
+import os
 
 
 
@@ -263,8 +264,32 @@ def halftonePropertyBlock():
 #     newNode.setBlendingMode("soft_light_pegtop")
 
 
+
+def exportDoc():
+
+    if currentDoc:
+        exportPath = "~/gitprojects/amberstorm/src/covers/renameMe.png"
+        fileName = "renameMe.png"
+        fullPath = os.path.join(exportPath, fileName)
+
+        os.makedirs(exportPath, exist_ok=True)
+
+        info = InfoObject()
+        info.setProperty("alpha", True) 
+        info.setProperty("compression", 9) 
+        info.setProperty("forceSRGB", False)  
+        info.setProperty("saveSRGBProfile", False)
+        
+        success = currentDoc.exportImage(fullPath, info)
+        
+        if success:
+            print(f"Exported successfully to: {fullPath}")
+    else:
+        print("Export failed")
+
 fillCanvas()
 copyLayer()
 filterLayerOilpaint()
 halftonePropertyBlock()
 currentDoc.refreshProjection()
+exportDoc()

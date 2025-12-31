@@ -34,8 +34,11 @@ def fillCanvas():
 def copyLayer():
     duplicatedLayer = activeLayer.duplicate()
     duplicatedLayer.setName(activeLayer.name() + " Copy")
-    parentLayer = activeLayer.parentNode()
+    parentLayer = activeLayer.parentNode() or currentDoc.rootNode()
     parentLayer.addChildNode(duplicatedLayer, activeLayer)
+
+    currentDoc.setActiveNode(duplicatedLayer)
+    currentDoc.waitForDone()
 
 def filterLayerOilpaint():
     oilpaintFilter = application.filter('oilpaint')
@@ -68,18 +71,25 @@ def filterLayerOilpaint():
 #         #     print(f"halftoneFilterConfig.setProperty('{prop_name}', '{clean_value}')")
 
 
-def selectTop():
-    if currentDoc:
-        rootNodes = currentDoc.topLevelNodes()
+# def selectTop():
+#     if currentDoc:
+#         rootNodes = currentDoc.topLevelNodes()
         
-        if rootNodes:
-            topLayer = rootNodes[0]
-            currentDoc.setActiveNode(topLayer)
-        else:
-            print("No layers found in the document.")
-    else:
-        print("No active document found.")
+#         if rootNodes:
+#             topLayer = rootNodes[0]
+#             currentDoc.setActiveNode(topLayer)
+#         else:
+#             print("No layers found in the document.")
+#     else:
+#         print("No active document found.")
+
+        
+#     currentDoc.refreshProjection()
+
 def halftonePropertyBlock():
+    CopiedLayer =(activeLayer.name() + " Copy")
+    newNode = currentDoc.nodeByName(CopiedLayer)
+    currentDoc.setActiveNode(newNode)
     halftoneFilter = application.filter('halftone')
     halftoneFilterConfig = halftoneFilter.configuration()
     halftoneFilterConfig.setProperty('RGBA_channel0_background_color', '<!DOCTYPE color> <color> <RGB g="1" space="sRGB-elle-V2-srgbtrc.icc" b="1" r="1"/> </color>')
@@ -260,13 +270,23 @@ def halftonePropertyBlock():
     halftoneFilterConfig.setProperty('intensity_invert', 'false')
     halftoneFilterConfig.setProperty('mode', 'independent_channels')
     halftoneFilter.setConfiguration(halftoneFilterConfig)
-    halftoneFilter.apply(activeLayer, 0, 0, currentDoc.width(), currentDoc.height())
+    halftoneFilter.apply(newNode, 0, 0, currentDoc.width(), currentDoc.height())
 
 
 
 fillCanvas()
+print(activeLayer.name())
+
 copyLayer()
+print(activeLayer.name())
+
 filterLayerOilpaint()
-selectTop()
+print(activeLayer.name())
+
+# selectTop()
+# print(activeLayer.name())
+
 halftonePropertyBlock()
+print(activeLayer.name())
+
 currentDoc.refreshProjection()

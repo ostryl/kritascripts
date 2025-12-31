@@ -1,87 +1,12 @@
-import sys
-from krita import *
-from pathlib import Path
-import xml.etree.ElementTree as ET
-import re
 
+print("Module loaded")  # to confirm import works
+def test_func():
+    print("hello")
 
-
-application = Krita.instance()
-currentDoc = application.activeDocument()
-activeLayer = currentDoc.activeNode()
-canvasWidth = currentDoc.width()
-canvasHeight = currentDoc.height()
-
-def fillCanvas():
-    if not currentDoc:
-        print("No active document!")
-        return
-    if not activeLayer or activeLayer.type() != "paintlayer":
-        print("Select a paint layer first!")
-        return
-    activeLayer.scaleNode(QPoint(0,0), canvasWidth, canvasHeight, "Bicubic")
-    layerBounds = currentDoc.activeNode()
-    layerX = activeLayer.position().x()
-    layerY = activeLayer.position().y()
-    realBounds = layerBounds.bounds()
-    absoluteX = realBounds.x()
-    absoluteY = realBounds.y()
-    movementX = (-1 * (absoluteX)) + (layerX)
-    movementY = (-1 * (absoluteY)) + (layerY)
-    activeLayer.move(movementX,movementY)
-    currentDoc.activeNode()
-
-def copyLayer():
-    duplicatedLayer = activeLayer.duplicate()
-    duplicatedLayer.setName(activeLayer.name() + " Copy")
-    parentLayer = activeLayer.parentNode()
-    parentLayer.addChildNode(duplicatedLayer, activeLayer)
-
-def filterLayerOilpaint():
-    oilpaintFilter = application.filter('oilpaint')
-    oilpaintFilterConfig = oilpaintFilter.configuration()
-    oilpaintFilterConfig.setProperty('brushsize', 5)
-    oilpaintFilterConfig.setProperty('smooth', 30)
-    oilpaintFilter.setConfiguration(oilpaintFilterConfig)
-    oilpaintFilter.apply(activeLayer, 0, 0, currentDoc.width(), currentDoc.height())
-
-
-# def parseXMLFilter():
-
-#     xmlPath = currentDir / "imageedit.xml"
-#     try:
-#         tree = ET.parse(str(xmlPath))
-#         root = tree.getroot()
-#     except FileNotFoundError:
-#         print(f"Error: Could not find the file at {xmlPath}")
-
-#     for param in root.findall('.//param'):
-        
-#         prop_name = param.get('name')
-        
-#         prop_value = param.text 
-
-#         clean_value = re.sub(r'\s+', ' ', prop_value).strip()
-
-
-#         # if prop_name and clean_value:
-#         #     print(f"halftoneFilterConfig.setProperty('{prop_name}', '{clean_value}')")
-
-
-def selectTop():
-    if currentDoc:
-        rootNodes = currentDoc.topLevelNodes()
-        
-        if rootNodes:
-            topLayer = rootNodes[0]
-            currentDoc.setActiveNode(topLayer)
-        else:
-            print("No layers found in the document.")
-    else:
-        print("No active document found.")
 def halftonePropertyBlock():
     halftoneFilter = application.filter('halftone')
     halftoneFilterConfig = halftoneFilter.configuration()
+
     halftoneFilterConfig.setProperty('RGBA_channel0_background_color', '<!DOCTYPE color> <color> <RGB g="1" space="sRGB-elle-V2-srgbtrc.icc" b="1" r="1"/> </color>')
     halftoneFilterConfig.setProperty('RGBA_channel0_background_opacity', '100')
     halftoneFilterConfig.setProperty('RGBA_channel0_foreground_color', '<!DOCTYPE color> <color> <RGB g="0" space="sRGB-elle-V2-srgbtrc.icc" b="0" r="0"/> </color>')
@@ -259,14 +184,3 @@ def halftonePropertyBlock():
     halftoneFilterConfig.setProperty('intensity_hardness', '80')
     halftoneFilterConfig.setProperty('intensity_invert', 'false')
     halftoneFilterConfig.setProperty('mode', 'independent_channels')
-    halftoneFilter.setConfiguration(halftoneFilterConfig)
-    halftoneFilter.apply(activeLayer, 0, 0, currentDoc.width(), currentDoc.height())
-
-
-
-fillCanvas()
-copyLayer()
-filterLayerOilpaint()
-selectTop()
-halftonePropertyBlock()
-currentDoc.refreshProjection()

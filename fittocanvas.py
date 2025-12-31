@@ -34,9 +34,9 @@ def fillCanvas():
 def copyLayer():
     duplicatedLayer = activeLayer.duplicate()
     duplicatedLayer.setName(activeLayer.name() + " Copy")
+    duplicatedLayer.setBlendingMode("soft_light_svg")
     parentLayer = activeLayer.parentNode() or currentDoc.rootNode()
     parentLayer.addChildNode(duplicatedLayer, activeLayer)
-
     currentDoc.setActiveNode(duplicatedLayer)
     currentDoc.waitForDone()
 
@@ -69,22 +69,6 @@ def filterLayerOilpaint():
 
 #         # if prop_name and clean_value:
 #         #     print(f"halftoneFilterConfig.setProperty('{prop_name}', '{clean_value}')")
-
-
-# def selectTop():
-#     if currentDoc:
-#         rootNodes = currentDoc.topLevelNodes()
-        
-#         if rootNodes:
-#             topLayer = rootNodes[0]
-#             currentDoc.setActiveNode(topLayer)
-#         else:
-#             print("No layers found in the document.")
-#     else:
-#         print("No active document found.")
-
-        
-#     currentDoc.refreshProjection()
 
 def halftonePropertyBlock():
     CopiedLayer =(activeLayer.name() + " Copy")
@@ -272,21 +256,15 @@ def halftonePropertyBlock():
     halftoneFilter.setConfiguration(halftoneFilterConfig)
     halftoneFilter.apply(newNode, 0, 0, currentDoc.width(), currentDoc.height())
 
+# def softLight():
+#     CopiedLayer = (activeLayer.name() + " Copy")
+#     newNode = currentDoc.nodeByName(CopiedLayer)
+#     currentDoc.setActiveNode(newNode)
+#     newNode.setBlendingMode("soft_light_pegtop")
 
 
 fillCanvas()
-print(activeLayer.name())
-
 copyLayer()
-print(activeLayer.name())
-
 filterLayerOilpaint()
-print(activeLayer.name())
-
-# selectTop()
-# print(activeLayer.name())
-
 halftonePropertyBlock()
-print(activeLayer.name())
-
 currentDoc.refreshProjection()
